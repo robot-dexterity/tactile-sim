@@ -63,7 +63,11 @@ class MG400(BaseRobotArm):
             raise ValueError(f"MG400 expects 4 or {self.num_control_dofs} joint angles")
 
         control_joint_angles = super().get_joint_angles()
-        control_joint_angles[:4] = joint_angles
+        control_joint_angles[0] = joint_angles[0]  # j1
+        control_joint_angles[1] = joint_angles[1]  # j2_1
+        control_joint_angles[2] = joint_angles[2]  # j3_1
+        control_joint_angles[3] = -(joint_angles[1] + joint_angles[2])  # j4_1
+        control_joint_angles[4] = joint_angles[3]  # j5
         control_joint_angles[5] = joint_angles[1]
         control_joint_angles[6] = -joint_angles[1]
         control_joint_angles[7] = joint_angles[1] + joint_angles[2]
@@ -98,7 +102,8 @@ class MG400(BaseRobotArm):
         """
         Return the MG400's 4 logical joints, matching the real robot interface.
         """
-        return super().get_joint_angles()[:4]
+        control_joint_angles = super().get_joint_angles()
+        return control_joint_angles[[0, 1, 2, 4]]
 
     def move_joints(self, targ_joint_angles, quick_mode=False):
         targ_joint_angles = self._logical_to_control_joint_angles(targ_joint_angles)
