@@ -251,7 +251,7 @@
         <origin xyz="0.0659996239003897 0.0170000000000371 0.031000800715573" rpy="0 0 0"/>
         <parent link="link4_1"/>
         <child link="link5"/>
-        <axis xyz="-1.19408295462994E-05 0 0.999999999928708"/>
+        <axis xyz="0 0 1"/>
         <limit lower="-6.28319" upper="6.28319" effort="0" velocity="0"/>
     </joint>
 

@@ -2,8 +2,6 @@ import numpy as np
 import warnings
 from tactile_sim.utils.pybullet_draw_utils import draw_link_frame
 
-warnings.simplefilter('always', UserWarning)
-
 
 class BaseRobotArm:
     def __init__(

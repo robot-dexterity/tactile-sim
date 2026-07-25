@@ -354,7 +354,7 @@
 		<limit effort="0.00000" lower="-6.28319" upper="6.28319" velocity="0.00000"/>
 		<dynamics damping="1.0" friction="0.0001"/>
 		<origin rpy="0.00000 -0.00000 0.00000" xyz="0.06600 0.01700 0.03100"/>
-		<axis xyz="-0.00001 0.00000 1.00000"/>
+		<axis xyz="0.00000 0.00000 1.00000"/>
 	</joint>
 	<joint name="ee_joint" type="fixed">
 		<parent link="link5"/>
