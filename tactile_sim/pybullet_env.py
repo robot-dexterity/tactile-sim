@@ -22,15 +22,20 @@ def pybullet_env(
     sensor_core="no_core",
     sensor_dynamics=None,
     image_size=(128, 128),
+    turn_off_border=False,
     show_tactile=False,
     stim_name="circle",
     stim_path=None,
     stim_pose=(600, 0, 12.5, 0, 0, 0),
     show_gui=True,
+    physics_rate=240,
+    solver_iterations=300,
     load_target=None,
     **kwargs
 ):
-    timestep = 1 / 240.0
+    if physics_rate <= 0:
+        raise ValueError("physics_rate must be positive")
+    timestep = 1 / physics_rate
     sensor_dynamics = sensor_dynamics or {}
     stim_path = stim_path or add_assets_path("stimuli")
 
@@ -54,7 +59,7 @@ def pybullet_env(
         "core": sensor_core,
         "dynamics": sensor_dynamics,
         "image_size": image_size,
-        "turn_off_border": False,
+        "turn_off_border": turn_off_border,
         "show_tactile": show_tactile,
     }
 
@@ -70,7 +75,11 @@ def pybullet_env(
         "show_vision": False,
     }
 
-    pb = connect_pybullet(timestep, show_gui)
+    pb = connect_pybullet(
+        timestep,
+        show_gui,
+        solver_iterations=solver_iterations,
+    )
     load_standard_environment(pb)
 
     if stim_name is not None:

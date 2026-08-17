@@ -33,7 +33,11 @@ def standard_argparse():
     return parser
 
 
-def connect_pybullet(timestep, show_gui=False):
+def connect_pybullet(
+    timestep,
+    show_gui=False,
+    solver_iterations=300,
+):
     """
     Create a pyullet instance with set physics params.
     """
@@ -53,7 +57,7 @@ def connect_pybullet(timestep, show_gui=False):
     pb.setGravity(0, 0, -9.81)
     pb.setPhysicsEngineParameter(
         fixedTimeStep=timestep,
-        numSolverIterations=300,
+        numSolverIterations=solver_iterations,
         numSubSteps=1,
         contactBreakingThreshold=0.0005,
         erp=0.05,
