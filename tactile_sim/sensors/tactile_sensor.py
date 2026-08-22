@@ -17,6 +17,7 @@ class TactileSensor:
         link_name_to_index,
         joint_name_to_index,
         image_size=[128, 128],
+        depth_dtype="uint8",
         turn_off_border=False,
         sensor_type="standard",
         sensor_core="no_core",
@@ -32,6 +33,10 @@ class TactileSensor:
         self.sensor_core = sensor_core
         self.sensor_dynamics = sensor_dynamics
         self.image_size = image_size
+        self.depth_dtype = np.dtype(depth_dtype)
+        if self.depth_dtype not in (
+                np.dtype("uint8"), np.dtype("uint16"), np.dtype("float32")):
+            raise ValueError("depth_dtype must be uint8, uint16, or float32")
         self.turn_off_border = turn_off_border
         self.sensor_num = sensor_num
         self.link_name_to_index = link_name_to_index
@@ -285,9 +290,9 @@ class TactileSensor:
         # convert depth to penetration
         pen_img = np.abs(diff_dep)
 
-        # convert dep to display format
+        # normalise penetration before selecting the requested storage precision
         max_penetration = 0.05
-        pen_img = ((np.clip(pen_img, 0, max_penetration) / max_penetration) * 255).astype(np.uint8)
+        pen_img = (np.clip(pen_img, 0, max_penetration) / max_penetration).astype(np.float32)
 
         # reduce noise by setting all parts of the image where the sensor body is visible to zero
         mask_base_id = cur_mask & ((1 << 24) - 1)
@@ -295,11 +300,19 @@ class TactileSensor:
         full_mask = (mask_base_id == self.embodiment_id) & (mask_link_id == self.tactile_link_ids["body"])
         pen_img[full_mask] = 0
 
-        # add border from ref image
-        if not self.turn_off_border:
-            pen_img[self.border_mask == 1] = self.no_deformation_gray[self.border_mask == 1]
+        border = self.border_mask == 1
+        if np.issubdtype(self.depth_dtype, np.floating):
+            if not self.turn_off_border:
+                pen_img[border] = self.no_deformation_gray[border] / 255.0
+            return pen_img.astype(self.depth_dtype)
 
-        return pen_img
+        max_value = np.iinfo(self.depth_dtype).max
+        image = (pen_img * max_value).astype(self.depth_dtype)
+        if not self.turn_off_border:
+            image[border] = (
+                self.no_deformation_gray[border].astype(np.uint32) * max_value // 255
+            ).astype(self.depth_dtype)
+        return image
 
     def connect(self):
         """

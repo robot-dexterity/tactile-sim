@@ -22,6 +22,7 @@ def pybullet_env(
     sensor_core="no_core",
     sensor_dynamics=None,
     image_size=(128, 128),
+    depth_dtype="uint8",
     turn_off_border=False,
     show_tactile=False,
     stim_name="circle",
@@ -59,6 +60,7 @@ def pybullet_env(
         "core": sensor_core,
         "dynamics": sensor_dynamics,
         "image_size": image_size,
+        "depth_dtype": depth_dtype,
         "turn_off_border": turn_off_border,
         "show_tactile": show_tactile,
     }
